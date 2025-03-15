@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI趋势 - 微信文章生成器</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI趋势 - 微信文章生成器</h1>
+      <p>一键生成AI行业趋势分析文章，自动发布到微信公众号</p>
+    </header>
+
+    <main>
+      <section class="control-panel">
+        <div class="card">
+          <h2>文章配置</h2>
+          <form id="articleForm">
+            <div class="form-group">
+              <label for="topic">主题关键词:</label>
+              <input type="text" id="topic" name="topic" placeholder="例: AI大模型、生成式AI" value="AI大模型">
+            </div>
+            
+            <div class="form-group">
+              <label for="articleCount">文章收集数量:</label>
+              <input type="number" id="articleCount" name="articleCount" min="3" max="10" value="5">
+            </div>
+            
+            <div class="form-group">
+              <label for="style">文章风格:</label>
+              <select id="style" name="style">
+                <option value="professional">专业分析</option>
+                <option value="casual">通俗易懂</option>
+                <option value="technical">技术深度</option>
+              </select>
+            </div>
+            
+            <div class="form-group actions">
+              <button type="submit" id="generateBtn" class="primary-btn">生成文章</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="preview-section" id="previewSection">
+        <div class="card">
+          <h2>文章预览 <span id="articleTitle"></span></h2>
+          <div class="preview-controls">
+            <button id="downloadBtn" class="secondary-btn" disabled>下载HTML</button>
+            <button id="copyBtn" class="secondary-btn" disabled>复制内容</button>
+          </div>
+          <div class="loading-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>正在生成文章，请稍候...</p>
+          </div>
+          <div class="preview-container" id="previewContainer"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2025 AI趋势 - 微信文章生成器</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html> 

@@ -1,7 +1,7 @@
 {
   "tasks": {
     "start": "deno run --watch --allow-env --allow-ffi --allow-read --allow-sys --allow-net src/index.ts",
-    "test": "deno run --allow-env --allow-ffi --allow-read  --allow-sys --allow-net src/test.ts",
+    "test": "deno run --allow-env --allow-ffi --allow-read --allow-sys --allow-net --allow-write --cached-only src/test.ts",
     "build:win": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-pc-windows-msvc --output trendFinder.exe --icon ./docs/images/main.ico --include src/modules/render/templates src/test.ts ",
     "build:mac-x64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-apple-darwin --output trendFinder-mac-x64 --include src/modules/render/templates src/test.ts ",
     "build:mac-arm64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target aarch64-apple-darwin --output trendFinder-mac-arm64 --include src/modules/render/templates src/test.ts ",
