@@ -5,6 +5,9 @@ import {
   ChatMessage,
   LLMProvider,
 } from "@src/providers/interfaces/llm.interface.ts";
+import { Logger } from "@zilla/logger";
+
+const logger = new Logger("openai-compatible-llm");
 
 export class OpenAICompatibleLLM implements LLMProvider {
   private baseURL!: string;
@@ -41,6 +44,8 @@ export class OpenAICompatibleLLM implements LLMProvider {
 
     // 如果指定了特定模型，使用指定的模型，否则使用第一个可用模型
     this.defaultModel = this.specifiedModel || this.availableModels[0];
+
+    logger.debug(`配置刷新 - 基础URL: ${this.baseURL}, 默认模型: ${this.defaultModel}`);
 
     if (!this.baseURL) {
       throw new Error(`${this.configKeyPrefix}BASE_URL is not set`);
@@ -93,27 +98,43 @@ export class OpenAICompatibleLLM implements LLMProvider {
     options: ChatCompletionOptions = {},
   ): Promise<any> {
     try {
-      // 使用HttpClient进行请求，自动处理重试和超时
-      return await this.httpClient.request(`${this.baseURL}/chat/completions`, {
+      const modelName = options.model || this.defaultModel;
+      
+      // Fix URL construction to avoid double slashes
+      const baseUrlWithoutTrailingSlash = this.baseURL.endsWith('/') 
+        ? this.baseURL.slice(0, -1) 
+        : this.baseURL;
+      const requestUrl = `${baseUrlWithoutTrailingSlash}/chat/completions`;
+      
+      const requestBody = {
+        model: modelName,
+        messages,
+        temperature: options.temperature ?? 0.7,
+        top_p: options.top_p ?? 1,
+        max_tokens: options.max_tokens ?? 2000,
+        stream: options.stream ?? false,
+        response_format: options.response_format,
+      };
+      
+      // 详细日志输出
+      logger.debug(`请求URL: ${requestUrl}`);
+      logger.debug(`使用模型: ${modelName}`);
+      logger.debug(`请求体: ${JSON.stringify(requestBody, null, 2)}`);
+      
+      // Use the fixed URL for the actual request too
+      return await this.httpClient.request(requestUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${this.token}`,
         },
-        body: JSON.stringify({
-          model: options.model || this.defaultModel,
-          messages,
-          temperature: options.temperature ?? 0.7,
-          top_p: options.top_p ?? 1,
-          max_tokens: options.max_tokens ?? 2000,
-          stream: options.stream ?? false,
-          response_format: options.response_format,
-        }),
+        body: JSON.stringify(requestBody),
         timeout: 60000, // 60秒超时
         retries: 3, // 最多重试3次
         retryDelay: 1000, // 重试间隔1秒
       });
     } catch (error) {
+      logger.error(`创建聊天完成失败: ${(error as Error).message}`);
       throw new Error(`创建聊天完成失败: ${(error as Error).message}`);
     }
   }
